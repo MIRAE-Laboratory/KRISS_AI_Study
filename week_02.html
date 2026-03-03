@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI - Week 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<!-- Mermaid.js -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'default' });
+</script>
+<style>
+  :root {
+    --bg-main: #f8fafc;
+    --text-main: #1e293b;
+    --accent: #0f4c81;
+    --card-blue: #eff6ff;
+    --border-blue: #bfdbfe;
+    --card-green: #f0fdf4;
+    --border-green: #bbf7d0;
+    --card-orange: #fff7ed;
+    --border-orange: #fed7aa;
+    --card-pink: #fdf2f8;
+    --border-pink: #fbcfe8;
+    --card-purple: #faf5ff;
+    --border-purple: #e9d5ff;
+    --card-yellow: #fefce8;
+    --border-yellow: #fef08a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body, html {
+    font-family: 'Inter', sans-serif;
+    background: #0f172a;
+    color: var(--text-main);
+    overflow: hidden; /* Hide scrollbars, use custom navigation */
+    font-size: 1.8rem;
+  }
+  .presentation {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    height: 100vh;
+    width: 100vw;
+  }
+  .presentation::-webkit-scrollbar { display: none; }
+  .slide {
+    scroll-snap-align: start;
+    flex: 0 0 100vw;
+    height: 100vh;
+    padding: 60px 80px; /* Top/Bottom 60px, Left/Right 80px for margins */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  .slide-content {
+    background: var(--bg-main);
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    padding: 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    font-size: 1rem; /* 1.5x of original */
+  }
+  .slide-title {
+    font-size: 2rem; /* 1.5x of original */
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+    border-bottom: 5px solid var(--accent);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+    line-height: 1.2;
+  }
+  .slide-subtitle {
+    font-size: 1rem; /* 1.5x of original */
+    color: #64748b;    
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+  }
+  /* Title Slide Variations */
+  .title-slide .slide-content {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #ffffff, #f1f5f9);
+  }
+  .title-slide .slide-title { font-size: 2.5rem; border: none; margin-bottom: 1.5rem; color: var(--accent); }
+  .title-slide .slide-subtitle { font-size: 1.5rem; font-weight: 600; color: #334155; }
+  
+  /* Title Emphasis Variations */
+  .title-emphasis-slide .slide-content {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f8fafc;
+  }
+  .title-emphasis-slide .slide-title {
+    font-size: 3rem;
+    border: none;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .title-emphasis-slide .slide-subtitle {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #cbd5e1;
+  }
+  
+  /* Layouts */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Increased min-width to prevent 4 columns on wide screens */
+    gap: 1.5rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .card {
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+  .card-header { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.4rem; }
+  .card-header .icon { font-size: 1.3rem; margin-right: 0.5rem; }
+  .card-body ul { list-style-type: none; padding-left: 0; }
+  .card-body li { margin-bottom: 0.5rem; position: relative; padding-left: 1.2rem; line-height: 1.4; font-size: 0.95rem; }
+  .card-body li::before { content: "•"; color: #94a3b8; font-weight: bold; position: absolute; left: 0; top: 0; }
+  .plain-bullets li { position: relative; padding-left: 1.2rem; list-style-type: none; }
+  .plain-bullets li::before { content: "•"; color: var(--accent); font-weight: bold; position: absolute; left: 0; top: 0; }
+  
+  .slide-text {
+    font-size: 1.6rem;
+    color: #475569;
+    line-height: 1.6;
+  }
+  
+  .card-blue { background: var(--card-blue); border-color: var(--border-blue); color: #1e3a8a; }
+  .card-green { background: var(--card-green); border-color: var(--border-green); color: #14532d; }
+  .card-orange { background: var(--card-orange); border-color: var(--border-orange); color: #7c2d12; }
+  .card-pink { background: var(--card-pink); border-color: var(--border-pink); color: #831843; }
+  .card-purple { background: var(--card-purple); border-color: var(--border-purple); color: #4c1d95; }
+  .card-yellow { background: var(--card-yellow); border-color: var(--border-yellow); color: #713f12; }
+  
+  .highlight-quote {
+    background: #f8fafc;
+    border-left: 5px solid var(--accent);
+    padding: 1.5rem;
+    font-size: 1rem;
+    font-style: italic;
+    margin: 0.5rem 0;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  }
+  .image-placeholder {
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    color: #64748b;
+    margin: 0.5rem 0;
+  }
+  .img-icon { font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5; }
+  .image-container {
+    margin: 0.5rem 0;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .slide-img {
+    max-width: 100%;
+    max-height: 50vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+  }
+  .slide-img:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Modal Overlay */
+  .image-modal {
+    display: flex;
+    visibility: hidden;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9000;
+    background-color: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .image-modal.active {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+    z-index: 9999;
+  }
+  .modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+  }
+  .image-modal.active .modal-content {
+    transform: scale(1);
+  }
+  .close-modal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10000;
+    line-height: 1;
+  }
+  .close-modal:hover {
+    color: #94a3b8;
+  }
+  .img-caption {
+    font-size: 0.95rem;
+    color: #475569;
+    font-style: italic;
+    max-width: 80%;
+    line-height: 1.5;
+  }
+  .mermaid-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+  }
+  .mermaid-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin: 0.5rem auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .mermaid-group .mermaid-container {
+    margin: 0;
+    flex: 1;
+    min-height: auto;
+  }
+  .code-block {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Consolas', monospace;
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+    line-height: 1.4;
+  }
+  .mermaid {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .mermaid svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  .reference-link {
+    font-size: 0.9rem;
+    color: #475569;
+    background: #e2e8f0;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+  }
+  .inline-code {
+    background: #e2e8f0;
+    color: #dc2626;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  .styled-table th { background: #334155; color: white; text-align: left; padding: 1rem; }
+  .styled-table td { padding: 1rem; background: white; border-bottom: 1px solid #f1f5f9; }
+  .styled-table tr:hover td { background: #f8fafc; }
+  
+  .flow-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  .flow-step {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 600;
+    color: #0f172a;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid #cbd5e1;
+  }
+  .flow-arrow {
+    font-size: 1.5rem;
+    color: #94a3b8;
+    margin: 0 1rem;
+  }
+  
+  .slide-number {
+    position: absolute;
+    bottom: 2rem;
+    right: 2.5rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+  .plain-bullets {
+    margin: 1rem 0;
+    padding-left: 2rem;
+  }
+  .plain-bullets li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  /* Fixed Layout Elements */
+  .global-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    background: #0f172a;
+    color: #94a3b8;
+    z-index: 2000;
+    border-bottom: 1px solid #1e293b;
+  }
+  .header-logo { color: white; margin-right: 1.5rem; letter-spacing: -0.5px; font-size: 0.75rem; }
+  .header-sep { color: #334155; margin: 0 1rem; }
+  .header-subtitle { font-size: 0.75rem; }
+
+  .side-nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px; /* 2/3 of 50px approx */
+    height: 70px; /* 2/3 of 100px approx */
+    background: rgba(30, 41, 59, 0.4);
+    border: none;
+    color: white;
+    font-size: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: background 0.2s, width 0.2s;
+    border-radius: 6px;
+  }
+  .side-nav-btn:hover { background: rgba(37, 99, 235, 0.8); width: 45px; }
+  .prev-side { left: 10px; }
+  .next-side { right: 10px; }
+
+  /* Navigation Bar (Fixed Bottom) */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #0f172a;
+    border-top: 1px solid #1e293b;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 2rem;
+    height: 50px;
+    z-index: 2000;
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .nav-main-btn {
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.75rem;
+  }
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 2px;
+    margin-right: 20px;
+  }
+  .btn-nav {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .btn-nav:hover {
+    background: #1e293b;
+    color: white;
+  }
+  .page-input-wrapper {
+    display: flex;
+    align-items: center;
+    color: #64748b;
+    font-size: 0.75rem;
+    margin: 0 8px;
+    font-family: monospace;
+  }
+  .page-input {
+    background: transparent;
+    border: 1px solid #334155;
+    color: white;
+    width: 32px;
+    text-align: center;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    padding: 1px;
+    margin-right: 4px;
+  }
+  .section-links {
+    display: flex;
+    gap: 16px;
+    border-left: 1px solid #1e293b;
+    padding-left: 20px;
+  }
+  .nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .nav-link:hover {
+    color: white;
+  }
+</style>
+</head>
+<body>
+  <header class="global-header">
+    <span class="header-logo">KRISS Agentic AI 스터디 · 2주차</span>
+    <span class="header-sep">|</span>
+    <span class="header-subtitle">PDF→마크다운 변환, Antigravity 워크플로, 그리고 앱으로 구현하기</span>
+  </header>
+
+  <button class="side-nav-btn prev-side" id="prevSideBtn" title="Previous Slide">◀</button>
+  <button class="side-nav-btn next-side" id="nextSideBtn" title="Next Slide">▶</button>
+
+  <div class="presentation" id="presentation">
+    <section class="slide title-slide" id="slide-1">
+<div class="slide-content">
+<h1 class="slide-title">KRISS Agentic AI 스터디 · 2주차</h1>
+<p class="slide-subtitle">PDF→마크다운 변환, Antigravity 워크플로, 그리고 앱으로 구현하기</p>
+<div class="highlight-quote">1주차에서 만든 "연구포스터"를 넘어, <strong>폴더 단위로 문서를 자동 변환·포스터화</strong>하는 파이프라인을 만들고, 이를 <strong>실제 앱</strong>으로 띄워 봅니다.</div>
+</div>
+</section>
+<section class="slide" id="slide-2">
+<div class="slide-content">
+<h2 class="slide-title">2주차 목차</h2>
+<p class="slide-subtitle">문서 파이프라인부터 앱까지, 단계별로 진행합니다</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">📖</span> 1. 강의</div>
+<div class="card-body"><ul><li>PDF에서 <strong>텍스트·이미지</strong> 추출하기 (개념과 도구)</li><li>추출 결과를 <strong>마크다운</strong>으로 정리하는 방법</li><li>왜 마크다운인가? — 이후 AI·포스터·RAG에 유리한 이유</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">💻</span> 2. 실습</div>
+<div class="card-body"><ul><li><strong>실습 1</strong>: PDF → 마크다운 변환 스크립트 작성·실행</li><li><strong>실습 2</strong>: 특정 폴더의 마크다운을 각각 포스터로 만드는 <strong>Antigravity 워크플로</strong></li><li><strong>실습 3</strong>: 위 기능을 <strong>Web 앱</strong>(예: Streamlit)으로 띄우기</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">🎯</span> 3. 목표</div>
+<div class="card-body"><ul><li>"폴더에 PDF 넣으면 → 마크다운으로 저장 → 원하면 포스터까지" 한 번에 돌리는 <strong>나만의 파이프라인</strong> 체험</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-3">
+<div class="slide-content">
+<h2 class="slide-title">2주차 <strong>전체 흐름</strong></h2>
+<p class="slide-subtitle">세 단계를 차례대로 진행합니다</p>
+<div class="flow-container">
+<div class="flow-step">PDF 문서</div> <div class="flow-arrow">➔</div> <div class="flow-step">[추출·변환]</div> <div class="flow-arrow">➔</div> <div class="flow-step">마크다운 파일</div> <div class="flow-arrow">➔</div> <div class="flow-step">[Antigravity 워크플로]</div> <div class="flow-arrow">➔</div> <div class="flow-step">포스터(HTML/이미지)</div> <div class="flow-arrow">➔</div> <div class="flow-step">[앱]</div> <div class="flow-arrow">➔</div> <div class="flow-step">사용자가 버튼/입력으로 실행</div>
+</div>
+<div class="cards-grid">
+<div class="card card-yellow">
+<div class="card-header"><span class="icon">💡</span> 이렇게 하면 좋은 이유</div>
+<div class="card-body"><ul><li>논문·보고서 PDF를 <strong>한 번에</strong> 정리해 두면, 나중에 챗봇(RAG), 요약, 포스터 재생성에 그대로 활용 가능</li><li>Antigravity는 "폴더 안의 md 파일들 각각 포스터로 만들어줘" 같은 <strong>반복 작업</strong>을 에이전트에게 맡기기 좋음</li><li>앱으로 만들면 팀원·동료도 같은 파이프라인을 <strong>코드 없이</strong> 사용할 수 있음</li></ul></div>
+</div>
+</div>
+<div class="mermaid-container"><div class="mermaid">graph LR
+    A[PDF 폴더] --> B[추출·변환]
+    B --> C[마크다운 폴더]
+    C --> D[Antigravity 워크플로]
+    D --> E[포스터들]
+    E --> F[Web 앱]
+    style B fill:#e3f2fd
+    style D fill:#fff3e0
+    style F fill:#e8f5e9</div></div>
+</div>
+</section>
+<section class="slide" id="slide-4">
+<div class="slide-content">
+<h2 class="slide-title">PDF에서 <strong>무엇을</strong> 가져올 수 있나요?</h2>
+<p class="slide-subtitle">텍스트만이 아니라 이미지·표·레이아웃까지</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">📄</span> 텍스트</div>
+<div class="card-body"><ul><li>페이지별·단락별 <strong>문자</strong> 추출. 대부분의 라이브러리가 지원</li><li>주의: 스캔 PDF(이미지로만 된 문서)는 <strong>OCR</strong>이 필요합니다</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">🖼️</span> 이미지</div>
+<div class="card-body"><ul><li>PDF 안에 삽입된 <strong>그림·차트·사진</strong>을 이미지 파일로 저장</li><li>포스터·리포트 재구성 시 그대로 재사용하기 좋음</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">📐</span> 구조(선택)</div>
+<div class="card-body"><ul><li>제목·단락·표·리스트 등 <strong>구조 정보</strong>를 유지하면 마크다운 변환 품질이 좋아짐</li><li><strong>Marker</strong>, <strong>pymupdf4llm</strong> 같은 도구가 레이아웃 인식에 강함</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-5">
+<div class="slide-content">
+<h2 class="slide-title"><strong>도구</strong> 한눈에 보기</h2>
+<p class="slide-subtitle">상황에 맞는 라이브러리를 고르면 됩니다</p>
+<table class="styled-table"><thead><tr><th>도구</th><th>장점</th><th>적합한 경우</th></tr></thead><tbody><tr><td><strong>PyMuPDF (fitz)</strong></td><td>빠름, 텍스트+이미지 추출 간단, 의존성 적음</td><td>일반 PDF, 스크립트로 자동화</td></tr><tr><td><strong>pdf2image</strong></td><td>PDF 페이지를 이미지로 변환 (poppler 사용)</td><td>OCR 전 단계, 썸네일</td></tr><tr><td><strong>Marker</strong></td><td>레이아웃·표·수식 인식 좋음, md 출력 품질 높음</td><td>논문·복잡한 레이아웃</td></tr><tr><td><strong>pymupdf4llm</strong></td><td>PyMuPDF 기반, LLM/RAG용 md 출력</td><td>간단한 문서, 빠른 구축</td></tr><tr><td><strong>pdfplumber</strong></td><td>표 추출에 강함</td><td>표가 많은 보고서</td></tr></tbody></table>
+<div class="highlight-quote">💡 <strong>추천</strong>: 먼저 <strong>PyMuPDF</strong>로 텍스트+이미지 추출을 해 보고, 논문·복잡한 문서는 <strong>Marker</strong>를 시도해 보세요.</div>
+</div>
+</section>
+<section class="slide" id="slide-6">
+<div class="slide-content">
+<h2 class="slide-title">왜 <strong>마크다운</strong>으로 바꿀까요?</h2>
+<p class="slide-subtitle">PDF 그대로 쓰지 않고 변환하는 이유</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">🤖</span> AI·에이전트 친화적</div>
+<div class="card-body"><ul><li>LLM이 <strong>텍스트+구조</strong>를 읽기 좋음. RAG, 요약, 챗봇 컨텍스트로 사용하기 편함</li><li>포스터·리포트 재생성 시 "이 마크다운 기준으로 만들어줘"라고 지시하기 쉽음</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">📁</span> 한 번 변환, 여러 번 사용</div>
+<div class="card-body"><ul><li>PDF → 마크다운 <strong>한 번</strong> 해 두면, 포스터·PPT·요약·검색에 <strong>같은 소스</strong>를 재사용 가능</li><li>버전 관리(예: Git)에도 텍스트라서 유리함</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">🔧</span> 수정·재가공이 쉬움</div>
+<div class="card-body"><ul><li>제목·목록·이미지 참조가 명확해 수동 수정이나 스크립트로 후처리하기 좋음</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-7">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>실습 1-0: 환경 준비</strong></h2>
+<p class="slide-subtitle">필요한 패키지 설치 (한 번만 하면 됩니다)</p>
+<p class="slide-text"><strong>권장: 가상환경에서 진행</strong></p>
+<pre class="code-block"><code class="language-bash"># 가상환경 활성화 (이미 있다면 생략)
+# Windows: .\.venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
+
+# PDF 처리 + (선택) 마크다운 고급 변환
+pip install pymupdf
+
+# 이미지 추출 시 (Windows는 poppler 별도 설치 필요할 수 있음)
+# pip install pdf2image</code></pre>
+<p class="slide-text"><strong>PyMuPDF로 할 수 있는 것</strong></p>
+<ul class="plain-bullets"><li>페이지별 텍스트 추출</li><li>페이지별 이미지 추출 (내장된 그림을 파일로 저장)</li><li>(기본) 레이아웃은 단순. 복잡한 논문은 나중에 Marker 추가 시도</li></ul>
+<div class="highlight-quote">💡 <strong>Tip</strong>: <code class="inline-code">import fitz</code> 로 사용합니다. (PyMuPDF 패키지 이름이지만 import는 fitz)</div>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-8">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>실습 1-1: PDF에서 텍스트 추출</strong></h2>
+<p class="slide-subtitle">페이지별로 텍스트만 가져오기</p>
+<p class="slide-text"><strong>단계</strong></p>
+<p class="slide-text">1. 테스트용 PDF 하나 준비 (예: <code class="inline-code">sample.pdf</code>를 스터디 폴더에)</p>
+<p class="slide-text">2. 아래와 비슷한 스크립트를 <code class="inline-code">pdf_to_text.py</code> 로 저장</p>
+<p class="slide-text">3. 터미널에서 <code class="inline-code">python pdf_to_text.py</code> 실행 후 출력 확인</p>
+<pre class="code-block"><code class="language-python">import fitz  # PyMuPDF
+
+def extract_text(pdf_path: str) -&gt; str:
+    doc = fitz.open(pdf_path)
+    text_parts = []
+    for page in doc:
+        text_parts.append(page.get_text())
+    doc.close()
+    return "\n\n".join(text_parts)
+
+if __name__ == "__main__":
+    path = "sample.pdf"  # 본인 PDF 경로로 변경
+    text = extract_text(path)
+    print(text[:1500])  # 앞 1500자만 확인</code></pre>
+<div class="highlight-quote">⚠️ <strong>주의</strong>: 경로에 한글이 있으면 Windows에서 오류가 날 수 있으니, 영문 경로를 쓰거나 <code class="inline-code">path = r"C:\경로\sample.pdf"</code> 형태로 raw 문자열을 쓰세요.</div>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-9">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>실습 1-2: PDF에서 이미지 추출</strong></h2>
+<p class="slide-subtitle">내장된 그림을 폴더에 저장하기</p>
+<p class="slide-text"><strong>목표</strong>: 각 페이지에서 이미지 리스트를 받아, 지정한 폴더에 <code class="inline-code">page0_img0.png</code> 형태로 저장</p>
+<pre class="code-block"><code class="language-python">import fitz
+import os
+
+def extract_images(pdf_path: str, out_dir: str = "images"):
+    os.makedirs(out_dir, exist_ok=True)
+    doc = fitz.open(pdf_path)
+    for page_num in range(len(doc)):
+        page = doc[page_num]
+        for img_index, img in enumerate(page.get_images()):
+            xref = img[0]
+            base = page.get_image_base64(xref)
+            ext = "png"  # 또는 이미지 타입에 따라 jpg 등
+            name = f"page{page_num}_img{img_index}.{ext}"
+            path = os.path.join(out_dir, name)
+            with open(path, "wb") as f:
+                f.write(fitz.decode_image(base))
+    doc.close()</code></pre>
+<p class="slide-text"><strong>실행 후</strong>: <code class="inline-code">images</code> 폴더에 이미지가 생성되는지 확인해 보세요.</p>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-10">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>실습 1-3: 텍스트 + 이미지를 마크다운으로 합치기</strong></h2>
+<p class="slide-subtitle">한 PDF당 마크다운 파일 하나 만들기</p>
+<p class="slide-text"><strong>전략</strong></p>
+<p class="slide-text">1. 페이지 순서대로 텍스트를 이어붙이고, 페이지 구분선(예: <code class="inline-code">---</code>) 넣기</p>
+<p class="slide-text">2. 이미지는 위에서 저장한 <code class="inline-code">images/</code> 경로를 마크다운 <strong>이미지 문법</strong>으로 참조</p>
+<p class="slide-text">예: `</p>
+<div class="image-container"><img src="images/page0_img0.png" alt="설명" class="slide-img" onclick="openModal('images/page0_img0.png')"><div class="img-caption">`</div></div>
+<p class="slide-text">3. 제목은 파일명 또는 첫 줄을 <code class="inline-code"># 제목</code> 으로 사용</p>
+<p class="slide-text"><strong>예시 출력 구조</strong></p>
+<p class="slide-text"><code class="inline-code"></code>`markdown</p>
+<p class="slide-text">(해당 페이지 텍스트)</p>
+<div class="image-container"><img src="images/page0_img0.png" alt="그림" class="slide-img" onclick="openModal('images/page0_img0.png')"></div>
+</div>
+</section>
+<section class="slide" id="slide-11">
+<div class="slide-content">
+<h2 class="slide-title"># 2페이지</h2>
+<p class="slide-text">...</p>
+<p class="slide-text"><code class="inline-code"></code>`</p>
+<p class="slide-text"><strong>직접 작성해 보기</strong>: <code class="inline-code">extract_text</code> + <code class="inline-code">extract_images</code> 를 조합해 <code class="inline-code">pdf_to_md(pdf_path, md_path, images_dir)</code> 함수를 만들고, 한 PDF에 대해 <code class="inline-code">.md</code> 파일 한 개가 나오도록 해 보세요. (시간이 부족하면 "페이지별 텍스트만 이어서 md로 저장"만 해도 좋습니다.)</p>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-12">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>실습 1-4: 폴더 안의 PDF를 모두 마크다운으로</strong></h2>
+<p class="slide-subtitle">반복 작업을 스크립트로 자동화</p>
+<p class="slide-text"><strong>할 일</strong></p>
+<ul class="plain-bullets"><li>지정한 폴더(예: <code class="inline-code">pdfs/</code>) 안의 모든 <code class="inline-code">.pdf</code> 파일에 대해</li><li>각 PDF마다 같은 이름의 <code class="inline-code">.md</code> 파일을 <code class="inline-code">markdown/</code> 폴더에 생성</li><li>이미지는 예: <code class="inline-code">markdown/images/파일명/</code> 에 저장해 충돌 방지</li></ul>
+<p class="slide-text"><strong>흐름</strong></p>
+<p class="slide-text">1. <code class="inline-code">pdfs/</code> 목록 읽기 → <code class="inline-code">glob("pdfs/*.pdf")</code> 또는 <code class="inline-code">pathlib</code></p>
+<p class="slide-text">2. 각 PDF에 대해 <code class="inline-code">pdf_to_md(pdf_path, md_path, images_dir)</code> 호출</p>
+<p class="slide-text">3. 예외 처리: 손상된 PDF는 건너뛰고 로그만 남기기</p>
+<div class="mermaid-container"><div class="mermaid">flowchart LR
+    A[pdfs/*.pdf] --> B[pdf_to_md]
+    B --> C[markdown/*.md]
+    B --> D[markdown/images/]</div></div>
+<div class="highlight-quote">💡 <strong>Tip</strong>: 나중에 "이 폴더의 마크다운만 포스터로 만들어줘"라고 Antigravity에 넘길 때, <code class="inline-code">markdown/</code> 경로를 지정하면 됩니다.</div>
+</div>
+</section>
+<section class="slide" id="slide-13">
+<div class="slide-content">
+<h2 class="slide-title"><strong>Antigravity 워크플로</strong>란?</h2>
+<p class="slide-subtitle">반복 작업을 에이전트에게 "한 번에" 맡기기</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">📌</span> 워크플로의 의미</div>
+<div class="card-body"><ul><li>"이 폴더에 있는 <strong>여러 마크다운 파일</strong>을 각각 <strong>포스터</strong>(또는 HTML/이미지)로 만들어줘"처럼 <strong>여러 단계·여러 파일</strong>을 한 번에 지시하는 방식</li><li>Antigravity는 자연어로 단계를 설명하면, 에이전트가 스크립트를 짜고 실행까지 제안함</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">🎯</span> 2주차에서 할 것</div>
+<div class="card-body"><ul><li>실습 1에서 만든 <code class="inline-code">markdown/</code> (또는 테스트용 md 몇 개)를 Antigravity에 <strong>폴더 경로</strong>로 알려 주기</li><li>"이 폴더 안의 각 .md 파일을 학술 포스터 형식의 HTML로 변환해 줘. 출력은 <code class="inline-code">posters/</code> 에 저장해 줘." 같은 <strong>한 문장 지시</strong>로 워크플로 요청</li><li>에이전트가 생성한 스크립트(반복문 + md 읽기 + 포스터 생성)를 검토하고 실행해 보기</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-14">
+<div class="slide-content">
+<h2 class="slide-title">🎯 <strong>실습 2: Antigravity로 md → 포스터 워크플로</strong></h2>
+<p class="slide-subtitle">자연어 한 문장으로 "폴더 전체 처리" 요청</p>
+<p class="slide-text"><strong>Step 1. 준비</strong></p>
+<ul class="plain-bullets"><li>실습 1에서 만든 <code class="inline-code">markdown/</code> 폴더가 있다면 그대로 사용</li><li>없다면: 수동으로 마크다운 파일 2~3개를 한 폴더(예: <code class="inline-code">md_for_poster/</code>)에 넣어 두기</li></ul>
+<p class="slide-text"><strong>Step 2. Antigravity에 넣을 지시문 예시</strong></p>
+<div class="highlight-quote">"<code class="inline-code">markdown</code> 폴더 안에 있는 각 .md 파일을 읽어서, 학술 포스터 형식의 HTML로 만들어 줘. 각 결과는 <code class="inline-code">posters</code> 폴더에 파일명과 같은 이름으로 저장해 줘. 포스터에는 제목, 개요, 본문 요약, 참고 문헌 섹션이 있으면 좋겠어."</div>
+<p class="slide-text"><strong>Step 3. 확인할 것</strong></p>
+<ul class="plain-bullets"><li>에이전트가 제안한 <strong>반복 처리 로직</strong>(어떤 폴더를 읽고, 어떤 방식으로 HTML을 만드는지)이 맞는지</li><li>실행 시 <strong>경로</strong>(현재 프로젝트 기준 상대 경로)가 올바른지</li><li><code class="inline-code">posters/</code> 에 HTML 파일이 생성되었는지, 브라우저로 열어 보기</li></ul>
+<div class="highlight-quote">💡 <strong>Tip</strong>: "한 개의 md만 먼저 포스터로 만들어 보고, 그다음에 for 문으로 폴더 전체에 적용해 줘"처럼 <strong>단계를 나누어</strong> 지시해도 됩니다.</div>
+</div>
+</section>
+<section class="slide" id="slide-15">
+<div class="slide-content">
+<h2 class="slide-title">실습 2 <strong>정리</strong>: 우리가 만든 워크플로</h2>
+<p class="slide-subtitle">사람은 "무엇을 할지"만 말하고, "어떻게"는 에이전트가 제안</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">입력</span> 입력</div>
+<div class="card-body"><ul><li>특정 폴더의 <strong>마크다운 파일들</strong> (우리가 실습 1에서 PDF→md로 만든 결과)</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">처리</span> 처리</div>
+<div class="card-body"><ul><li>Antigravity 에이전트가 <strong>각 md를 읽어</strong> 포스터 형식(제목·섹션·레이아웃)으로 변환</li><li>반복문으로 폴더 전체 처리</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">출력</span> 출력</div>
+<div class="card-body"><ul><li><strong>posters/</strong> 에 HTML (또는 지정한 형식) 파일로 저장</li><li>브라우저로 열어서 확인·수정</li></ul></div>
+</div>
+</div>
+<div class="mermaid-container"><div class="mermaid">sequenceDiagram
+    participant U as 사용자
+    participant A as Antigravity
+    participant F as markdown 폴더
+    U->>A: "이 폴더의 md들을 포스터로 만들어줘"
+    A->>F: md 파일 목록 읽기
+    loop 각 md
+        A->>A: 포스터 HTML 생성
+        A->>posters: 저장
+    end
+    A-->>U: 완료 알림</div></div>
+</div>
+</section>
+<section class="slide" id="slide-16">
+<div class="slide-content">
+<h2 class="slide-title"><strong>앱</strong>으로 구현한다는 것</h2>
+<p class="slide-subtitle">스크립트를 "버튼·입력창"이 있는 화면으로 감싸기</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">🖥️</span> 왜 앱으로?</div>
+<div class="card-body"><ul><li>터미널·코드를 모르는 사람도 <strong>폴더 선택 → 변환 버튼</strong>만 누르면 같은 파이프라인 사용 가능</li><li>나중에 챗봇·RAG·포스터 생성 기능을 <strong>같은 앱</strong>에 붙이기 좋음 (3주차~)</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">🔧</span> 어떤 프레임워크?</div>
+<div class="card-body"><ul><li><strong>Streamlit</strong>: Python만으로 빠르게 폼·버튼·파일 업로드·실행 결과 표시 가능. 추천</li><li><strong>Gradio</strong>: 채팅·입력 UI가 익숙한 형태. 3주차 챗봇과 연결할 때 유리</li><li>이번 주는 <strong>Streamlit</strong>으로 "PDF 폴더 경로 입력 → 변환 실행 → 마크다운/포스터 결과 안내"까지 구현하는 것을 목표로 합니다</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-17">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>실습 3-1: Streamlit 앱 골격</strong></h2>
+<p class="slide-subtitle">화면에 제목·입력·버튼 나오게 하기</p>
+<p class="slide-text"><strong>설치</strong></p>
+<pre class="code-block"><code class="language-bash">pip install streamlit</code></pre>
+<p class="slide-text"><strong>최소 앱 (<code class="inline-code">app.py</code>)</strong></p>
+<pre class="code-block"><code class="language-python">import streamlit as st
+
+st.title("📄 PDF → 마크다운 변환기")
+st.caption("2주차: KRISS Agentic AI 스터디")
+
+folder = st.text_input("PDF가 있는 폴더 경로", placeholder="예: ./pdfs")
+if st.button("변환 실행"):
+    if folder:
+        st.info(f"'{folder}' 폴더를 변환합니다. (다음 단계에서 로직 연결)")
+    else:
+        st.warning("폴더 경로를 입력해 주세요.")</code></pre>
+<p class="slide-text"><strong>실행</strong></p>
+<pre class="code-block"><code class="language-bash">streamlit run app.py</code></pre>
+<p class="slide-text">브라우저에서 제목·입력창·버튼이 보이면 성공입니다.</p>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-18">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>실습 3-2: 앱에 변환 로직 연결</strong></h2>
+<p class="slide-subtitle">버튼을 누르면 우리가 만든 함수가 실행되게</p>
+<p class="slide-text"><strong>할 일</strong></p>
+<p class="slide-text">1. 실습 1에서 만든 <strong>폴더 전체 PDF → 마크다운</strong> 함수를 <code class="inline-code">app.py</code> 에서 import (또는 같은 파일에 함수 정의)</p>
+<p class="slide-text">2. "변환 실행" 버튼 클릭 시:</p>
+<ul class="plain-bullets"><li>입력한 폴더 경로가 유효한지 확인</li><li>해당 폴더의 PDF 목록을 가져와서 한 건씩 <code class="inline-code">pdf_to_md</code> 호출</li><li>결과 저장 경로(예: <code class="inline-code">markdown/</code>)를 고정하거나, 사용자가 지정하게 할 수 있음</li></ul>
+<p class="slide-text">3. 완료 후 Streamlit으로 <strong>성공 메시지</strong> + "생성된 마크다운 파일 목록" 표시</p>
+<p class="slide-text">예: <code class="inline-code">st.success("변환 완료")</code> , <code class="inline-code">st.write(list_of_md_files)</code></p>
+<p class="slide-text"><strong>추가 아이디어</strong></p>
+<ul class="plain-bullets"><li><code class="inline-code">st.file_uploader</code> 로 PDF 여러 개를 업로드받고, 임시 폴더에 저장한 뒤 변환할 수도 있음 (선택)</li></ul>
+</div>
+</section>
+<section class="slide" id="slide-19">
+<div class="slide-content">
+<h2 class="slide-title">실습 3 <strong>정리</strong>: 우리 앱이 할 수 있는 것</h2>
+<p class="slide-subtitle">2주차 끝날 때까지 목표</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">✅</span> 최소 목표</div>
+<div class="card-body"><ul><li><strong>PDF 폴더 경로</strong> 입력 → <strong>변환 실행</strong> 버튼 → 해당 폴더의 PDF를 마크다운(+ 이미지)으로 변환해 지정 폴더에 저장</li><li>화면에 "완료" 및 생성된 파일 목록 표시</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">🎁</span> 여유 있으면</div>
+<div class="card-body"><ul><li>"마크다운 폴더 경로"를 추가 입력받아, "포스터 생성" 버튼으로 Antigravity가 만든 스크립트를 호출하거나, 간단한 md→HTML 변환을 앱 안에 넣기</li><li>변환 중 <strong>진행률</strong> 표시 (<code class="inline-code">st.progress</code>)</li></ul></div>
+</div>
+</div>
+<div class="highlight-quote">💡 3주차부터는 이 앱에 <strong>챗봇</strong>을 붙일 예정이므로, 지금은 "PDF→md 변환"만 안정적으로 앱에 붙여 두면 충분합니다.</div>
+</div>
+</section>
+<section class="slide" id="slide-20">
+<div class="slide-content">
+<h2 class="slide-title">⚠️ <strong>주의사항</strong>과 팁</h2>
+<p class="slide-subtitle">실습할 때 꼭 생각하면 좋은 것들</p>
+<div class="cards-grid">
+<div class="card card-pink">
+<div class="card-header"><span class="icon">🔒</span> 저작권·개인정보</div>
+<div class="card-body"><ul><li>변환하는 PDF가 <strong>본인 소유</strong>이거나 이용 허락이 있는지 확인</li><li>연구실·기관 자료는 보안 정책에 맞게 사용</li></ul></div>
+</div>
+<div class="card card-blue">
+<div class="card-header"><span class="icon">📂</span> 경로</div>
+<div class="card-body"><ul><li>Windows: <code class="inline-code">\</code> 대신 <code class="inline-code">/</code> 또는 raw 문자열 <code class="inline-code">r"C:\경로"</code> 사용 권장</li><li>Streamlit은 <strong>실행하는 터미널의 현재 디렉터리</strong>가 기준이므로, 상대 경로 사용 시 위치 확인</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">📦</span> 큰 PDF·많은 파일</div>
+<div class="card-body"><ul><li>한 번에 수백 개 PDF를 돌리면 메모리·시간이 많이 듦. 작은 폴더로 먼저 테스트</li><li>스캔 PDF(이미지만 있는 문서)는 OCR 없이 텍스트가 안 나옴 — 나중에 Tesseract 등 OCR 파이프라인 추가 가능</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-21">
+<div class="slide-content">
+<h2 class="slide-title">2주차 정리</h2>
+<p class="slide-subtitle">오늘 기억할 세 가지</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">1️⃣</span> PDF → 마크다운</div>
+<div class="card-body"><ul><li><strong>PyMuPDF</strong>로 텍스트·이미지 추출 후, 페이지 순으로 이어서 마크다운 파일로 저장</li><li>폴더 단위 <strong>일괄 변환</strong> 스크립트까지 작성해 두면 재사용이 편함</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">2️⃣</span> Antigravity 워크플로</div>
+<div class="card-body"><ul><li>"이 폴더의 md들을 각각 포스터로 만들어줘"처럼 <strong>한 문장 지시</strong>로 반복 작업 위임</li><li>에이전트가 제안한 스크립트·경로를 꼭 검토한 뒤 실행</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">3️⃣</span> 앱으로 구현</div>
+<div class="card-body"><ul><li><strong>Streamlit</strong>으로 PDF 폴더 경로 입력 + 변환 실행 + 결과 안내까지 연결</li><li>다음 주부터는 이 앱에 챗봇·페르소나를 붙여 갑니다</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-22">
+<div class="slide-content">
+<h2 class="slide-title">더 알아보기</h2>
+<p class="slide-text"><strong>PDF·마크다운 변환</strong></p>
+<a href="https://pymupdf.readthedocs.io/" target="_blank" class="reference-link">📚 PyMuPDF (fitz) Documentation</a>
+<a href="https://github.com/VikParuchuri/marker" target="_blank" class="reference-link">📚 Marker — PDF to Markdown</a>
+<a href="https://github.com/pymupdf/pymupdf4llm" target="_blank" class="reference-link">📚 pymupdf4llm</a>
+<p class="slide-text"><strong>앱·워크플로</strong></p>
+<a href="https://docs.streamlit.io/" target="_blank" class="reference-link">📚 Streamlit Documentation</a>
+<a href="https://antigravity.google/" target="_blank" class="reference-link">📚 Antigravity</a>
+<a href="https://www.gradio.app/" target="_blank" class="reference-link">📚 Gradio</a>
+<p class="slide-text"><strong>KRISS 스터디</strong></p>
+<div class="highlight-quote">1주차: 트렌드, 전략, Antigravity 포스터  </div>
+<div class="highlight-quote">3주차: WebUI 챗봇, 페르소나, 에이전트 간 대화</div>
+</div>
+</section>
+
+  </div>
+
+  <div id="image-modal" class="image-modal" onclick="closeModal()">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="modal-img">
+  </div>
+
+  <nav class="nav-bar">
+    <div class="nav-left">
+      <a href="index.html" class="nav-main-btn">Main</a>
+      <div class="nav-controls">
+        <button class="btn-nav" id="prevBtn" title="Previous Slide">◀</button>
+        <div class="page-input-wrapper">
+          <input type="text" id="pageInput" class="page-input" value="1"> / <span id="totalPages">22</span>
+        </div>
+        <button class="btn-nav" id="nextBtn" title="Next Slide">▶</button>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    const pres = document.getElementById('presentation');
+    const pageInput = document.getElementById('pageInput');
+    const totalSlides = 22;
+    let currentSlide = 1;
+
+    // Modal logic
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-img');
+    let modalScale = 1;
+    let isDragging = false;
+    let lastX, lastY;
+    let translateX = 0, translateY = 0;
+    let moved = false;
+    const DRAG_THRESHOLD = 5;
+
+    function applyTransform() {
+      modalImg.style.transform = `scale(${modalScale}) translate(${translateX}px, ${translateY}px)`;
+    }
+
+    function openModal(src) {
+      modal.classList.add('active');
+      modalImg.src = src;
+      document.body.style.overflow = 'hidden';
+      // Reset state
+      modalScale = 1;
+      translateX = 0;
+      translateY = 0;
+      applyTransform();
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => { modalImg.src = ''; }, 300);
+    }
+
+    // Zoom Logic
+    modal.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomSpeed = 0.1;
+      if (e.deltaY < 0) {
+        modalScale = Math.min(modalScale + zoomSpeed, 5);
+      } else {
+        modalScale = Math.max(modalScale - zoomSpeed, 0.5);
+      }
+      applyTransform();
+    }, { passive: false });
+
+    // Pan (Drag) Logic
+    modal.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      moved = false;
+      modalImg.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      
+      const deltaX = (e.clientX - lastX) / modalScale;
+      const deltaY = (e.clientY - lastY) / modalScale;
+      
+      if (Math.abs(e.clientX - lastX) > DRAG_THRESHOLD || Math.abs(e.clientY - lastY) > DRAG_THRESHOLD) {
+        moved = true;
+      }
+      
+      translateX += deltaX;
+      translateY += deltaY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      modalImg.style.cursor = 'zoom-out';
+      
+      // If no significant movement, treat as a click to close
+      if (!moved) {
+        closeModal();
+      }
+    });
+
+    function updateUrlHash(page) {
+      history.replaceState(null, null, '#slide-' + page);
+    }
+
+    function goToSlide(n) {
+      if (n >= 1 && n <= totalSlides) {
+        currentSlide = n;
+        const targetOffset = (n - 1) * window.innerWidth;
+        pres.scrollTo({ left: targetOffset, behavior: 'smooth' });
+        pageInput.value = n;
+        updateUrlHash(n);
+      }
+    }
+
+    function goNext() {
+      if(currentSlide < totalSlides) goToSlide(currentSlide + 1);
+    }
+    function goPrev() {
+      if(currentSlide > 1) goToSlide(currentSlide - 1);
+    }
+
+    let scrollTimeout;
+    pres.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const newSlide = Math.round(pres.scrollLeft / window.innerWidth) + 1;
+        if(newSlide !== currentSlide && newSlide >= 1 && newSlide <= totalSlides) {
+           currentSlide = newSlide;
+           pageInput.value = currentSlide;
+           updateUrlHash(currentSlide);
+        }
+      }, 50);
+    });
+
+    pageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = parseInt(e.target.value);
+        if (!isNaN(val)) goToSlide(val);
+        e.target.blur();
+      }
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', goNext);
+    document.getElementById('prevBtn').addEventListener('click', goPrev);
+    document.getElementById('nextSideBtn').addEventListener('click', goNext);
+    document.getElementById('prevSideBtn').addEventListener('click', goPrev);
+
+    document.addEventListener('keydown', (e) => {
+      if(e.target === pageInput) return;
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        goNext();
+      } else if (e.key === 'ArrowLeft') {
+        goPrev();
+      } else if (e.key === 'ArrowUp') {
+        const currentContent = document.querySelectorAll('.slide-content')[currentSlide - 1];
+        if (currentContent) currentContent.scrollBy({top: -100, behavior: 'smooth'});
+      } else if (e.key === 'ArrowDown') {
+        const currentContent = document.querySelectorAll('.slide-content')[currentSlide - 1];
+        if (currentContent) currentContent.scrollBy({top: 100, behavior: 'smooth'});
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#slide-')) {
+         const pageNum = parseInt(hash.replace('#slide-', ''));
+         if(!isNaN(pageNum)) {
+           setTimeout(() => goToSlide(pageNum), 100);
+         }
+      }
+    });
+  </script>
+</body>
+</html>

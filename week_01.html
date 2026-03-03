@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI - Week 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<!-- Mermaid.js -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'default' });
+</script>
+<style>
+  :root {
+    --bg-main: #f8fafc;
+    --text-main: #1e293b;
+    --accent: #0f4c81;
+    --card-blue: #eff6ff;
+    --border-blue: #bfdbfe;
+    --card-green: #f0fdf4;
+    --border-green: #bbf7d0;
+    --card-orange: #fff7ed;
+    --border-orange: #fed7aa;
+    --card-pink: #fdf2f8;
+    --border-pink: #fbcfe8;
+    --card-purple: #faf5ff;
+    --border-purple: #e9d5ff;
+    --card-yellow: #fefce8;
+    --border-yellow: #fef08a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body, html {
+    font-family: 'Inter', sans-serif;
+    background: #0f172a;
+    color: var(--text-main);
+    overflow: hidden; /* Hide scrollbars, use custom navigation */
+    font-size: 1.8rem;
+  }
+  .presentation {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    height: 100vh;
+    width: 100vw;
+  }
+  .presentation::-webkit-scrollbar { display: none; }
+  .slide {
+    scroll-snap-align: start;
+    flex: 0 0 100vw;
+    height: 100vh;
+    padding: 60px 80px; /* Top/Bottom 60px, Left/Right 80px for margins */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  .slide-content {
+    background: var(--bg-main);
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    padding: 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    font-size: 1rem; /* 1.5x of original */
+  }
+  .slide-title {
+    font-size: 2rem; /* 1.5x of original */
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+    border-bottom: 5px solid var(--accent);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+    line-height: 1.2;
+  }
+  .slide-subtitle {
+    font-size: 1rem; /* 1.5x of original */
+    color: #64748b;    
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+  }
+  /* Title Slide Variations */
+  .title-slide .slide-content {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #ffffff, #f1f5f9);
+  }
+  .title-slide .slide-title { font-size: 2.5rem; border: none; margin-bottom: 1.5rem; color: var(--accent); }
+  .title-slide .slide-subtitle { font-size: 1.5rem; font-weight: 600; color: #334155; }
+  
+  /* Title Emphasis Variations */
+  .title-emphasis-slide .slide-content {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f8fafc;
+  }
+  .title-emphasis-slide .slide-title {
+    font-size: 3rem;
+    border: none;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .title-emphasis-slide .slide-subtitle {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #cbd5e1;
+  }
+  
+  /* Layouts */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Increased min-width to prevent 4 columns on wide screens */
+    gap: 1.5rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .card {
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+  .card-header { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.4rem; }
+  .card-header .icon { font-size: 1.3rem; margin-right: 0.5rem; }
+  .card-body ul { list-style-type: none; padding-left: 0; }
+  .card-body li { margin-bottom: 0.5rem; position: relative; padding-left: 1.2rem; line-height: 1.4; font-size: 0.95rem; }
+  .card-body li::before { content: "•"; color: #94a3b8; font-weight: bold; position: absolute; left: 0; top: 0; }
+  .plain-bullets li { position: relative; padding-left: 1.2rem; list-style-type: none; }
+  .plain-bullets li::before { content: "•"; color: var(--accent); font-weight: bold; position: absolute; left: 0; top: 0; }
+  
+  .slide-text {
+    font-size: 1.6rem;
+    color: #475569;
+    line-height: 1.6;
+  }
+  
+  .card-blue { background: var(--card-blue); border-color: var(--border-blue); color: #1e3a8a; }
+  .card-green { background: var(--card-green); border-color: var(--border-green); color: #14532d; }
+  .card-orange { background: var(--card-orange); border-color: var(--border-orange); color: #7c2d12; }
+  .card-pink { background: var(--card-pink); border-color: var(--border-pink); color: #831843; }
+  .card-purple { background: var(--card-purple); border-color: var(--border-purple); color: #4c1d95; }
+  .card-yellow { background: var(--card-yellow); border-color: var(--border-yellow); color: #713f12; }
+  
+  .highlight-quote {
+    background: #f8fafc;
+    border-left: 5px solid var(--accent);
+    padding: 1.5rem;
+    font-size: 1rem;
+    font-style: italic;
+    margin: 0.5rem 0;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  }
+  .image-placeholder {
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    color: #64748b;
+    margin: 0.5rem 0;
+  }
+  .img-icon { font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5; }
+  .image-container {
+    margin: 0.5rem 0;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .slide-img {
+    max-width: 100%;
+    max-height: 50vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+  }
+  .slide-img:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Modal Overlay */
+  .image-modal {
+    display: flex;
+    visibility: hidden;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9000;
+    background-color: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .image-modal.active {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+    z-index: 9999;
+  }
+  .modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+  }
+  .image-modal.active .modal-content {
+    transform: scale(1);
+  }
+  .close-modal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10000;
+    line-height: 1;
+  }
+  .close-modal:hover {
+    color: #94a3b8;
+  }
+  .img-caption {
+    font-size: 0.95rem;
+    color: #475569;
+    font-style: italic;
+    max-width: 80%;
+    line-height: 1.5;
+  }
+  .mermaid-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+  }
+  .mermaid-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin: 0.5rem auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .mermaid-group .mermaid-container {
+    margin: 0;
+    flex: 1;
+    min-height: auto;
+  }
+  .code-block {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Consolas', monospace;
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+    line-height: 1.4;
+  }
+  .mermaid {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .mermaid svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  .reference-link {
+    font-size: 0.9rem;
+    color: #475569;
+    background: #e2e8f0;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+  }
+  .inline-code {
+    background: #e2e8f0;
+    color: #dc2626;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  .styled-table th { background: #334155; color: white; text-align: left; padding: 1rem; }
+  .styled-table td { padding: 1rem; background: white; border-bottom: 1px solid #f1f5f9; }
+  .styled-table tr:hover td { background: #f8fafc; }
+  
+  .flow-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  .flow-step {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 600;
+    color: #0f172a;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid #cbd5e1;
+  }
+  .flow-arrow {
+    font-size: 1.5rem;
+    color: #94a3b8;
+    margin: 0 1rem;
+  }
+  
+  .slide-number {
+    position: absolute;
+    bottom: 2rem;
+    right: 2.5rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+  .plain-bullets {
+    margin: 1rem 0;
+    padding-left: 2rem;
+  }
+  .plain-bullets li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  /* Fixed Layout Elements */
+  .global-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    background: #0f172a;
+    color: #94a3b8;
+    z-index: 2000;
+    border-bottom: 1px solid #1e293b;
+  }
+  .header-logo { color: white; margin-right: 1.5rem; letter-spacing: -0.5px; font-size: 0.75rem; }
+  .header-sep { color: #334155; margin: 0 1rem; }
+  .header-subtitle { font-size: 0.75rem; }
+
+  .side-nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px; /* 2/3 of 50px approx */
+    height: 70px; /* 2/3 of 100px approx */
+    background: rgba(30, 41, 59, 0.4);
+    border: none;
+    color: white;
+    font-size: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: background 0.2s, width 0.2s;
+    border-radius: 6px;
+  }
+  .side-nav-btn:hover { background: rgba(37, 99, 235, 0.8); width: 45px; }
+  .prev-side { left: 10px; }
+  .next-side { right: 10px; }
+
+  /* Navigation Bar (Fixed Bottom) */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #0f172a;
+    border-top: 1px solid #1e293b;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 2rem;
+    height: 50px;
+    z-index: 2000;
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .nav-main-btn {
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.75rem;
+  }
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 2px;
+    margin-right: 20px;
+  }
+  .btn-nav {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .btn-nav:hover {
+    background: #1e293b;
+    color: white;
+  }
+  .page-input-wrapper {
+    display: flex;
+    align-items: center;
+    color: #64748b;
+    font-size: 0.75rem;
+    margin: 0 8px;
+    font-family: monospace;
+  }
+  .page-input {
+    background: transparent;
+    border: 1px solid #334155;
+    color: white;
+    width: 32px;
+    text-align: center;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    padding: 1px;
+    margin-right: 4px;
+  }
+  .section-links {
+    display: flex;
+    gap: 16px;
+    border-left: 1px solid #1e293b;
+    padding-left: 20px;
+  }
+  .nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .nav-link:hover {
+    color: white;
+  }
+</style>
+</head>
+<body>
+  <header class="global-header">
+    <span class="header-logo">KRISS Agentic AI 스터디 · 1주차</span>
+    <span class="header-sep">|</span>
+    <span class="header-subtitle">활용 트렌드, 연구개발 전략, 그리고 Antigravity로 연구포스터 만들기</span>
+  </header>
+
+  <button class="side-nav-btn prev-side" id="prevSideBtn" title="Previous Slide">◀</button>
+  <button class="side-nav-btn next-side" id="nextSideBtn" title="Next Slide">▶</button>
+
+  <div class="presentation" id="presentation">
+    <section class="slide title-slide" id="slide-1">
+<div class="slide-content">
+<h1 class="slide-title">KRISS Agentic AI 스터디 · 1주차</h1>
+<p class="slide-subtitle">활용 트렌드, 연구개발 전략, 그리고 Antigravity로 연구포스터 만들기</p>
+<div class="highlight-quote">8주 과정: 나만의 에이전트 플랫폼을 만들고, 도구(Tool)를 붙여 에이전트가 필요한 기능을 스스로 수행하도록 유도하기</div>
+</div>
+</section>
+<section class="slide" id="slide-2">
+<div class="slide-content">
+<h2 class="slide-title">1주차 목차</h2>
+<p class="slide-subtitle">시각을 맞추고 첫 번째 결과물까지</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">📖</span> 1. 강의</div>
+<div class="card-body"><ul><li>Agentic AI 활용 트렌드와 핵심 개념</li><li>연구개발(R&D)에 활용할 수 있는 전략</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">💻</span> 2. 실습</div>
+<div class="card-body"><ul><li>Antigravity(AI 에이전트 IDE) 소개 및 환경 확인</li><li>Antigravity로 <strong>연구포스터</strong> 만들기</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">🗺️</span> 3. 로드맵</div>
+<div class="card-body"><ul><li>8주 동안 우리가 만들 것: 에이전트 플랫폼 + Tool 확장</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-3">
+<div class="slide-content">
+<h2 class="slide-title">스터디 <strong>목표</strong>와 구성</h2>
+<p class="slide-subtitle">트렌드·개념 소개 후, 연구개발을 돕는 에이전트 앱 개발</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">🎯</span> 최종 목표</div>
+<div class="card-body"><ul><li><strong>나만의 에이전트 플랫폼</strong> 구축</li><li>기능을 <strong>Tool</strong> 형태로 추가</li><li>에이전트가 필요한 기능을 알아서 수행하도록 설계</li></ul></div>
+</div>
+<div class="card card-purple">
+<div class="card-header"><span class="icon">📅</span> 운영 방식</div>
+<div class="card-body"><ul><li><strong>8주</strong>, 매주 약 <strong>2시간</strong></li><li>이론·개념 → 실습 → 단계별 앱 확장</li></ul></div>
+</div>
+</div>
+<div class="mermaid-container"><div class="mermaid">graph LR
+    A["1–2주: 기초·파이프라인"] --> B["3–4주: 챗봇·창작"]
+    B --> C["5–6주: RAG·토의"]
+    C --> D["7–8주: 포스터·발표자료"]
+    style A fill:#e1f5fe,stroke:#0288d1
+    style B fill:#fff3e0,stroke:#f57c00
+    style C fill:#e8f5e9,stroke:#388e3c
+    style D fill:#f3e5f5,stroke:#7b1fa2</div></div>
+</div>
+</section>
+<section class="slide" id="slide-4">
+<div class="slide-content">
+<h2 class="slide-title">Agentic AI <strong>활용 트렌드</strong></h2>
+<p class="slide-subtitle">도구 사용에서 에이전트 지휘로 — 패러다임 전환</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">📈</span> 현재 트렌드</div>
+<div class="card-body"><ul><li>AI는 이제 "한 번에 한 질문"이 아닌 <strong>목표 지향 자동 실행</strong></li><li>검색·코드·파일·리포트까지 <strong>파이프라인</strong>을 에이전트가 수행</li><li>연구·기업 현장에서 <strong>Agent-first</strong> 플랫폼과 툴이 빠르게 확산</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">🔬</span> 연구개발 맥락</div>
+<div class="card-body"><ul><li>논문 조사 → 요약 → 초안 작성, 데이터 분석 → 시각화 → 보고서 등</li><li><strong>사람은 목표를 주고 결과를 검증</strong>하는 역할로 이동</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-5">
+<div class="slide-content">
+<h2 class="slide-title"><strong>Tool</strong> vs <strong>Agent</strong> — 핵심 차이</h2>
+<p class="slide-subtitle">이 구분을 이해하면 과정의 절반이다</p>
+<table class="styled-table"><thead><tr><th>구분</th><th>AI 도구(Tool)</th><th>AI 에이전트(Agent)</th></tr></thead><tbody><tr><td>비유</td><td>전동 드릴</td><td>숙련된 목수</td></tr><tr><td>동작</td><td>사용자가 버튼을 눌러야만 동작</td><td>목표를 주면 스스로 계획·실행</td></tr><tr><td>예시</td><td>"이 문장 번역해줘"</td><td>"이 논문 읽고 한국어 요약 보고서 만들어줘"</td></tr><tr><td>실패 시</td><td>에러 메시지 출력</td><td>원인 분석 후 다른 방법 시도</td></tr><tr><td>맥락</td><td>매번 새로 시작</td><td>이전 작업 맥락을 기억하며 진행</td></tr><tr><td>도구 사용</td><td>없음(그 자체가 도구)</td><td>검색, 코드 실행, 파일 처리 등 활용</td></tr></tbody></table>
+</div>
+</section>
+<section class="slide" id="slide-6">
+<div class="slide-content">
+<h2 class="slide-title">연구개발(R&D)에 활용할 <strong>전략</strong></h2>
+<p class="slide-subtitle">에이전트를 어떻게 설계·운영할 것인가</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">🧱</span> 오케스트레이션</div>
+<div class="card-body"><ul><li>에이전트·도구를 <strong>레고 블록</strong>처럼 조합</li><li>"어떤 에이전트에게 어떤 역할을 줄까?"를 설계</li><li>코딩보다 <strong>아키텍처 사고</strong>가 중요</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">⚖️</span> 책임</div>
+<div class="card-body"><ul><li>에이전트 출력에 대한 <strong>최종 책임</strong>은 사람에게</li><li>환각·편향을 <strong>검증하고 수정</strong>하는 단계 필수</li><li>"AI가 그렇게 말했다"는 변명이 되지 않음</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">🕵️</span> Human-in-the-Loop (HITL)</div>
+<div class="card-body"><ul><li>반복 작업은 자동화, <strong>중요 판단 지점</strong>에서는 사람이 개입</li><li>해석·윤리·창의적 방향 결정은 AI에 위임하지 않음</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-7">
+<div class="slide-content">
+<h2 class="slide-title"><strong>Human-in-the-Loop</strong> (HITL)</h2>
+<p class="slide-subtitle">"어디서 사람이 개입할 것인가?" — 설계의 핵심 질문</p>
+<div class="flow-container">
+<div class="flow-step">에이전트 시작</div> <div class="flow-arrow">➔</div> <div class="flow-step">결과 생성</div> <div class="flow-arrow">➔</div> <div class="flow-step">⚠️ 사람 검토</div> <div class="flow-arrow">➔</div> <div class="flow-step">계속 진행 또는 수정 지시</div> <div class="flow-arrow">➔</div> <div class="flow-step">최종 결과</div>
+</div>
+<div class="cards-grid">
+<div class="card card-yellow">
+<div class="card-header"><span class="icon">💡</span> HITL이 필요한 순간</div>
+<div class="card-body"><ul><li>데이터 해석·통계적 판단</li><li>윤리적 판단이 필요한 경우</li><li>연구 가설·창의적 방향 선택</li><li><strong>대외 공개·논문·보고서</strong> 최종 확정 전</li></ul></div>
+</div>
+<div class="card card-pink">
+<div class="card-header"><span class="icon">⚠️</span> HITL 없을 때 위험</div>
+<div class="card-body"><ul><li>존재하지 않는 논문 인용(환각)</li><li>편향된 데이터로 잘못된 결론</li><li>저작권·정확성·신뢰도 문제</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-8">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>Antigravity</strong> — 에이전트 우선 개발 환경</h2>
+<p class="slide-subtitle">Google의 에이전트 기반 IDE</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">📌</span> Antigravity란?</div>
+<div class="card-body"><ul><li>에이전트가 코드 작성·실행·수정까지 수행하는 <strong>에이전트 퍼스트</strong> 플랫폼</li><li>자연어 지시 → 계획 → 코드 생성 → 실행 → 결과 확인 흐름 지원</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">🔗</span> 활용</div>
+<div class="card-body"><ul><li>연구 포스터, 스크립트, 시각화 등 <strong>지시만으로 결과물</strong> 생성</li><li>8주 과정에서 PDF→마크다운, 워크플로, 앱 구현 등에 단계적으로 활용</li></ul></div>
+</div>
+</div>
+<a href="https://antigravity.google/" target="_blank" class="reference-link">📚 Antigravity</a>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-9">
+<div class="slide-content">
+<h2 class="slide-title">🛠️ <strong>Antigravity 환경 확인</strong></h2>
+<p class="slide-subtitle">설치 및 프로젝트 폴더 열기</p>
+<p class="slide-text">1. Antigravity 다운로드 및 설치: <code class="inline-code">https://antigravity.google/download</code></p>
+<p class="slide-text">2. Google 계정으로 로그인</p>
+<p class="slide-text">3. 스터디용 프로젝트 폴더 생성 후 Antigravity에서 <strong>열기</strong></p>
+<p class="slide-text">4. (선택) 가상환경 <code class="inline-code">.venv</code> 사용 시 Antigravity에서 해당 인터프리터 인식 여부 확인</p>
+<div class="highlight-quote">Python 3.12 + 가상환경(venv) 사용을 권장합니다.</div>
+</div>
+</section>
+<section class="slide practice-slide" id="slide-10">
+<div class="slide-content">
+<h2 class="slide-title">🎯 <strong>실습: Antigravity로 연구포스터 만들기</strong></h2>
+<p class="slide-subtitle">자연어로 지시해 포스터 초안 생성</p>
+<div class="highlight-quote">"내 연구 주제(또는 관심 주제)를 한 문장으로 알려주면, 학술 포스터 형식의 마크다운/HTML 초안을 만들어줘."</div>
+<p class="slide-text"><strong>진행 순서</strong></p>
+<p class="slide-text">1. Antigravity에서 새 채팅(또는 에이전트 세션) 시작</p>
+<p class="slide-text">2. 위와 같은 지시를 자연스럽게 입력</p>
+<p class="slide-text">3. 에이전트가 생성한 포스터 초안 검토</p>
+<p class="slide-text">4. 제목, 섹션(배경, 방법, 결과, 결론 등), 레이아웃 수정 지시로 다듬기</p>
+<div class="mermaid-container"><div class="mermaid">sequenceDiagram
+    participant U as 나(연구자)
+    participant A as Antigravity 에이전트
+    U->>A: 연구 주제 + "포스터 초안 만들어줘"
+    Note over A: 계획 → 마크다운/HTML 생성
+    A-->>U: 포스터 초안
+    U->>A: 수정 요청 (제목, 섹션 등)
+    A-->>U: 수정된 초안</div></div>
+</div>
+</section>
+<section class="slide" id="slide-11">
+<div class="slide-content">
+<h2 class="slide-title">8주 <strong>로드맵</strong> 미리보기</h2>
+<p class="slide-subtitle">나만의 에이전트 플랫폼으로 가는 단계</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">2주</span> 2주차</div>
+<div class="card-body"><ul><li>PDF → 텍스트·이미지 추출 → 마크다운 변환</li><li>특정 폴더의 마크다운을 각각 포스터로 만드는 Antigravity 워크플로</li><li>이를 <strong>앱</strong>으로 구현</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">3주</span> 3주차</div>
+<div class="card-body"><ul><li>WebUI 기반 <strong>챗봇</strong>: 사용자와 대화</li><li><strong>페르소나</strong> 선택 (역할/성격에 따른 대화)</li><li>에이전트끼리 <strong>대화</strong>하는 기능</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">4주</span> 4주차</div>
+<div class="card-body"><ul><li><strong>창작마당</strong>: 주제·초안 제시 → 선택 에이전트들이 토의하며 고도화</li><li>평가·종료 기준 입력란 설계</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-12">
+<div class="slide-content">
+<h2 class="slide-title">8주 <strong>로드맵</strong> (이어서)</h2>
+<p class="slide-subtitle">RAG, 토의, 포스터·발표자료</p>
+<div class="cards-grid">
+<div class="card card-purple">
+<div class="card-header"><span class="icon">5주</span> 5주차</div>
+<div class="card-body"><ul><li>특정 폴더의 <strong>PDF 열람</strong> (WebUI)</li><li>백엔드에서 PDF → 마크다운 변환</li><li>대화 중 <strong>체크한 파일</strong> 기준 <strong>RAG</strong>로 질의 응답 시 참고</li></ul></div>
+</div>
+<div class="card card-pink">
+<div class="card-header"><span class="icon">6주</span> 6주차</div>
+<div class="card-body"><ul><li>선택한 연구자료를 바탕으로 <strong>여러 에이전트가 토의</strong>해 결론 도출</li></ul></div>
+</div>
+<div class="card card-blue">
+<div class="card-header"><span class="icon">7–8주</span> 7–8주차</div>
+<div class="card-body"><ul><li><strong>학술 포스터</strong> 자동 생성 기능</li><li><strong>파워포인트</strong> 생성 등 발표자료 도구 추가</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-13">
+<div class="slide-content">
+<h2 class="slide-title">1주차 정리</h2>
+<p class="slide-subtitle">오늘 기억할 세 가지</p>
+<div class="cards-grid">
+<div class="card card-blue">
+<div class="card-header"><span class="icon">1️⃣</span> 트렌드와 패러다임</div>
+<div class="card-body"><ul><li>AI "도구 사용" → AI "에이전트 지휘"</li><li>실행은 에이전트, <strong>목표 설정과 검증</strong>은 사람</li></ul></div>
+</div>
+<div class="card card-orange">
+<div class="card-header"><span class="icon">2️⃣</span> 에이전트 ≠ 챗봇</div>
+<div class="card-body"><ul><li>스스로 계획·도구 사용·수정 시도</li><li>"검색기"가 아니라 <strong>자율 연구 파트너</strong>에 가깝다</li></ul></div>
+</div>
+<div class="card card-green">
+<div class="card-header"><span class="icon">3️⃣</span> 연구개발 전략</div>
+<div class="card-body"><ul><li>오케스트레이션, 책임, Human-in-the-Loop</li><li>Antigravity로 <strong>연구포스터</strong>까지 만들어 보며 첫 걸음 완료</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="slide-14">
+<div class="slide-content">
+<h2 class="slide-title">더 알아보기</h2>
+<p class="slide-text"><strong>개념·트렌드</strong></p>
+<a href="https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai" target="_blank" class="reference-link">📚 The state of AI in 2025: Agents, innovation, and transformation (McKinsey)</a>
+<a href="https://www.bcg.com/publications/2025/how-agentic-ai-is-transforming-enterprise-platforms" target="_blank" class="reference-link">📚 How Agentic AI Is Transforming Enterprise Platforms (BCG)</a>
+<a href="https://aisera.com/blog/agentic-ai/" target="_blank" class="reference-link">📚 What Is Agentic AI? A Technical Overview (Aisera)</a>
+<p class="slide-text"><strong>튜토리얼·프레임워크</strong></p>
+<a href="https://huggingface.co/learn/agents-course/unit0/introduction" target="_blank" class="reference-link">📚 Hugging Face – AI Agents Course</a>
+<a href="https://langchain-ai.github.io/langgraph/" target="_blank" class="reference-link">📚 LangGraph Documentation</a>
+<a href="https://docs.crewai.com/" target="_blank" class="reference-link">📚 CrewAI Documentation</a>
+<a href="https://antigravity.google/" target="_blank" class="reference-link">📚 Antigravity</a>
+</div>
+</section>
+
+  </div>
+
+  <div id="image-modal" class="image-modal" onclick="closeModal()">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="modal-img">
+  </div>
+
+  <nav class="nav-bar">
+    <div class="nav-left">
+      <a href="index.html" class="nav-main-btn">Main</a>
+      <div class="nav-controls">
+        <button class="btn-nav" id="prevBtn" title="Previous Slide">◀</button>
+        <div class="page-input-wrapper">
+          <input type="text" id="pageInput" class="page-input" value="1"> / <span id="totalPages">14</span>
+        </div>
+        <button class="btn-nav" id="nextBtn" title="Next Slide">▶</button>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    const pres = document.getElementById('presentation');
+    const pageInput = document.getElementById('pageInput');
+    const totalSlides = 14;
+    let currentSlide = 1;
+
+    // Modal logic
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-img');
+    let modalScale = 1;
+    let isDragging = false;
+    let lastX, lastY;
+    let translateX = 0, translateY = 0;
+    let moved = false;
+    const DRAG_THRESHOLD = 5;
+
+    function applyTransform() {
+      modalImg.style.transform = `scale(${modalScale}) translate(${translateX}px, ${translateY}px)`;
+    }
+
+    function openModal(src) {
+      modal.classList.add('active');
+      modalImg.src = src;
+      document.body.style.overflow = 'hidden';
+      // Reset state
+      modalScale = 1;
+      translateX = 0;
+      translateY = 0;
+      applyTransform();
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => { modalImg.src = ''; }, 300);
+    }
+
+    // Zoom Logic
+    modal.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomSpeed = 0.1;
+      if (e.deltaY < 0) {
+        modalScale = Math.min(modalScale + zoomSpeed, 5);
+      } else {
+        modalScale = Math.max(modalScale - zoomSpeed, 0.5);
+      }
+      applyTransform();
+    }, { passive: false });
+
+    // Pan (Drag) Logic
+    modal.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      moved = false;
+      modalImg.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      
+      const deltaX = (e.clientX - lastX) / modalScale;
+      const deltaY = (e.clientY - lastY) / modalScale;
+      
+      if (Math.abs(e.clientX - lastX) > DRAG_THRESHOLD || Math.abs(e.clientY - lastY) > DRAG_THRESHOLD) {
+        moved = true;
+      }
+      
+      translateX += deltaX;
+      translateY += deltaY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      modalImg.style.cursor = 'zoom-out';
+      
+      // If no significant movement, treat as a click to close
+      if (!moved) {
+        closeModal();
+      }
+    });
+
+    function updateUrlHash(page) {
+      history.replaceState(null, null, '#slide-' + page);
+    }
+
+    function goToSlide(n) {
+      if (n >= 1 && n <= totalSlides) {
+        currentSlide = n;
+        const targetOffset = (n - 1) * window.innerWidth;
+        pres.scrollTo({ left: targetOffset, behavior: 'smooth' });
+        pageInput.value = n;
+        updateUrlHash(n);
+      }
+    }
+
+    function goNext() {
+      if(currentSlide < totalSlides) goToSlide(currentSlide + 1);
+    }
+    function goPrev() {
+      if(currentSlide > 1) goToSlide(currentSlide - 1);
+    }
+
+    let scrollTimeout;
+    pres.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const newSlide = Math.round(pres.scrollLeft / window.innerWidth) + 1;
+        if(newSlide !== currentSlide && newSlide >= 1 && newSlide <= totalSlides) {
+           currentSlide = newSlide;
+           pageInput.value = currentSlide;
+           updateUrlHash(currentSlide);
+        }
+      }, 50);
+    });
+
+    pageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = parseInt(e.target.value);
+        if (!isNaN(val)) goToSlide(val);
+        e.target.blur();
+      }
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', goNext);
+    document.getElementById('prevBtn').addEventListener('click', goPrev);
+    document.getElementById('nextSideBtn').addEventListener('click', goNext);
+    document.getElementById('prevSideBtn').addEventListener('click', goPrev);
+
+    document.addEventListener('keydown', (e) => {
+      if(e.target === pageInput) return;
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        goNext();
+      } else if (e.key === 'ArrowLeft') {
+        goPrev();
+      } else if (e.key === 'ArrowUp') {
+        const currentContent = document.querySelectorAll('.slide-content')[currentSlide - 1];
+        if (currentContent) currentContent.scrollBy({top: -100, behavior: 'smooth'});
+      } else if (e.key === 'ArrowDown') {
+        const currentContent = document.querySelectorAll('.slide-content')[currentSlide - 1];
+        if (currentContent) currentContent.scrollBy({top: 100, behavior: 'smooth'});
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#slide-')) {
+         const pageNum = parseInt(hash.replace('#slide-', ''));
+         if(!isNaN(pageNum)) {
+           setTimeout(() => goToSlide(pageNum), 100);
+         }
+      }
+    });
+  </script>
+</body>
+</html>
